@@ -58,3 +58,4 @@ flask db upgrade
 ```
 flask run
 ```
+Автор Вадим Гусейнов
