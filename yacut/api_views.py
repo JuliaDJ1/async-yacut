@@ -9,7 +9,6 @@ from yacut.constants import (
     MAX_SHORT_ID_LENGTH, NO_BODY_MESSAGE, NO_URL_FIELD_MESSAGE,
     SHORT_ID_PATTERN
 )
-from yacut.models import URLMap
 from yacut.utils import (
     get_unique_short_id, get_url_map_by_short, save_url_map
 )
@@ -31,13 +30,13 @@ def api_create_id():
     custom_id = data.get('custom_id')
 
     if custom_id:
-        if len(custom_id) > MAX_SHORT_ID_LENGTH or \
-                not re.match(SHORT_ID_PATTERN, custom_id):
+        if (len(custom_id) > MAX_SHORT_ID_LENGTH or
+                not re.match(SHORT_ID_PATTERN, custom_id)):
             return jsonify(
                 {'message': INVALID_SHORT_ID_MESSAGE}
             ), HTTPStatus.BAD_REQUEST
 
-        if URLMap.query.filter_by(short=custom_id).first():
+        if get_url_map_by_short(custom_id):
             return jsonify(
                 {'message': DUPLICATE_MESSAGE}
             ), HTTPStatus.BAD_REQUEST

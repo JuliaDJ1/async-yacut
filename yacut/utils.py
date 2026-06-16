@@ -2,7 +2,7 @@ from random import choice
 
 from yacut import db
 from yacut.constants import (
-    GENERATION_ATTEMPTS, SHORT_ID_CHARS, SHORT_LINK_LENGTH
+    GENERATION_ATTEMPTS, RESERVED_PATHS, SHORT_ID_CHARS, SHORT_LINK_LENGTH
 )
 from yacut.models import URLMap
 
@@ -30,3 +30,10 @@ def save_url_map(original, short=None):
 
 def get_url_map_by_short(short_id):
     return URLMap.query.filter_by(short=short_id).first()
+
+
+def is_short_id_available(short_id):
+    return (
+        short_id not in RESERVED_PATHS and
+        URLMap.query.filter_by(short=short_id).first() is None
+    )

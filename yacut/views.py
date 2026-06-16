@@ -4,11 +4,11 @@ from http import HTTPStatus
 from flask import abort, flash, redirect, render_template, request
 
 from yacut import app
-from yacut.constants import DUPLICATE_MESSAGE, RESERVED_PATHS
+from yacut.constants import DUPLICATE_MESSAGE
 from yacut.forms import FileUploadForm, URLMapForm
-from yacut.models import URLMap
 from yacut.utils import (
-    get_unique_short_id, get_url_map_by_short, save_url_map
+    get_unique_short_id, get_url_map_by_short, is_short_id_available,
+    save_url_map
 )
 from yacut.yandex_disk import upload_files_to_disk
 
@@ -21,8 +21,7 @@ def index_view():
         custom_id = form.custom_id.data
 
         if custom_id:
-            if custom_id in RESERVED_PATHS or \
-                    URLMap.query.filter_by(short=custom_id).first():
+            if not is_short_id_available(custom_id):
                 flash(DUPLICATE_MESSAGE, 'error')
                 return render_template('index.html', form=form)
             short_id = custom_id
