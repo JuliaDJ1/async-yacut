@@ -41,7 +41,7 @@ Python 3.12 · Flask 3 · Flask-SQLAlchemy · Flask-Migrate (Alembic) · Flask-W
 **Требования:** Python 3.10+ (проверено на 3.12), OAuth-токен Яндекс Диска для загрузки файлов.
 
 ```bash
-git clone https://github.com/JuliaDJ1/async-yacut.git
+git clone https://github.com/vadim-guseinov/async-yacut.git
 cd async-yacut
 python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
