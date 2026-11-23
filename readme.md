@@ -1,61 +1,75 @@
-### Как запустить проект Yacut:
+<div align="center">
 
-Клонировать репозиторий и перейти в него в командной строке:
+# ✂️ YaCut
 
-```
-git clone 
-```
+**Сервис коротких ссылок и файлообменник: сокращение URL, REST API и асинхронная загрузка файлов на Яндекс Диск**
 
-```
-cd yacut
-```
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?logo=sqlalchemy&logoColor=white)
+![aiohttp](https://img.shields.io/badge/aiohttp-async-2C5BB4?logo=aiohttp&logoColor=white)
+![Tests](https://img.shields.io/badge/pytest-35%2F35_passed-2ea44f?logo=pytest&logoColor=white)
 
-Cоздать и активировать виртуальное окружение:
+</div>
 
-```
-python3 -m venv venv
-```
+## О проекте
 
-* Если у вас Linux/macOS
+YaCut превращает длинную ссылку в короткую вида `http://host/abc123` — автоматически или с собственным идентификатором.
+Вторая функция — файлообменник: пользователь загружает несколько файлов, сервис асинхронно отправляет их на Яндекс Диск и выдаёт по короткой ссылке на каждый.
 
-    ```
-    source venv/bin/activate
-    ```
+## Возможности
 
-* Если у вас windows
+- Веб-форма сокращения ссылок (Flask-WTF) с валидацией и пользовательским идентификатором до 16 символов (латиница и цифры).
+- Генерация уникального 6-символьного идентификатора.
+- **REST API** (спецификация — [`openapi.yml`](openapi.yml)): создание короткой ссылки и получение исходного URL.
+- Загрузка нескольких файлов на **Яндекс Диск через aiohttp** (получение ссылки на загрузку → загрузка → получение ссылки на скачивание).
+- Обработка ошибок API в едином JSON-формате, собственные страницы 404 и 500.
 
-    ```
-    source venv/scripts/activate
-    ```
+## Стек
 
-Установить зависимости из файла requirements.txt:
+Python 3.12 · Flask 3 · Flask-SQLAlchemy · Flask-Migrate (Alembic) · Flask-WTF · aiohttp · asyncio · Яндекс Диск REST API · SQLite · pytest
 
-```
-python3 -m pip install --upgrade pip
-```
+## Что сделано
 
-```
+- Модель `URLMap`, веб-представления и API-представления разделены по модулям.
+- Асинхронный клиент Яндекс Диска на aiohttp, вызываемый из синхронного Flask-представления через отдельный event loop.
+- Миграции базы данных через Flask-Migrate.
+- **35 из 35 автотестов** проходят (Яндекс Диск подменяется mock-сервером).
+
+## Запуск
+
+**Требования:** Python 3.10+ (проверено на 3.12), OAuth-токен Яндекс Диска для загрузки файлов.
+
+```bash
+git clone https://github.com/JuliaDJ1/async-yacut.git
+cd async-yacut
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-Создать в директории проекта файл .env с четыремя переменными окружения:
-
-```
-FLASK_APP=yacut
-FLASK_ENV=development
-SECRET_KEY=your_secret_key
-DB=sqlite:///db.sqlite3
-```
-
-Создать базу данных и применить миграции:
-
-```
+cp .env.example .env            # заполните SECRET_KEY и DISK_TOKEN
 flask db upgrade
-```
-
-Запустить проект:
-
-```
 flask run
 ```
-Автор Вадим Гусейнов
+
+### Тесты
+
+```bash
+pytest
+```
+
+## Примеры запросов к API
+
+```bash
+curl -X POST http://127.0.0.1:5000/api/id/ \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://docs.python.org/3/library/asyncio.html", "custom_id": "asyncio"}'
+# {"url": "https://docs.python.org/3/library/asyncio.html", "short_link": "http://127.0.0.1:5000/asyncio"}
+
+curl http://127.0.0.1:5000/api/id/asyncio/
+# {"url": "https://docs.python.org/3/library/asyncio.html"}
+```
+
+## Автор
+
+**Вадим Гусейнов** — Python-разработчик (Backend) · [Telegram](https://t.me/eviliing)
